@@ -26,31 +26,53 @@ touch layouts/shortcodes/plantuml.html
 
 Add this code to `plantuml.html`
 
-
 ```html
 <div class="plantuml-diagram">
-    <textarea id="plantuml-code" style="display:none;">
+    <textarea class="plantuml-code" style="display:none;">
     {{ .Inner }}
     </textarea>
-    <img id="plantuml-image" src="" alt="PlantUML Diagram" />
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            function encodeHex(data) {
-                return data.split('').map(function(c) {
-                    return c.charCodeAt(0).toString(16).padStart(2, '0');
-                }).join('');
-            }
-
-            function compressToPlantUML(hex) {
-                return "http://www.plantuml.com/plantuml/img/" + "~h" + hex ;
-            }
-
-            const code = document.getElementById('plantuml-code').value;
-            const hex = encodeHex(code);
-            document.getElementById('plantuml-image').src = compressToPlantUML(hex);
-        });
-    </script>
+    <img class="plantuml-image" src="" alt="PlantUML Diagram"/>
 </div>
+
+```
+Create plantuml.js file then index it to your project 
+
+```html
+<script src="/js/plantuml.js" charset="utf-8"></script>
+```
+
+
+This Code will loop for all the rendered `.plantuml-diagram` then he will get the content of each then load it's diagram inside it.
+
+```javascript
+
+// Place under /js/plantuml.js
+
+document.addEventListener("DOMContentLoaded", function () {
+    function encodeHex(data) {
+        return data.split('').map(function (c) {
+            return c.charCodeAt(0).toString(16).padStart(2, '0');
+        }).join('');
+    }
+
+    function compressToPlantUML(hex) {
+        return "http://www.plantuml.com/plantuml/img/" + "~h" + hex;
+    }
+
+    document.querySelectorAll('.plantuml-diagram').forEach(function (container, index) {
+        const textarea = container.querySelector('.plantuml-code');
+        const img = container.querySelector('.plantuml-image');
+
+        if (textarea && img) {
+            const code = textarea.value;
+            console.log("PlantUML Code:", code); 
+            const hex = encodeHex(code);
+            console.log("Encoded Hex:", hex); 
+            img.src = compressToPlantUML(hex);
+        }
+    });
+});
+
 
 ```
 
